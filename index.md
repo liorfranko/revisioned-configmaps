@@ -1,4 +1,38 @@
-## Welcome to GitHub Pages
+## Revisioned Configmaps for Canary deployments on Kubernetes
+
+# Problem:
+- We perform a canary deployment using Argo Rollouts with 2 steps:
+    ```
+    steps:
+    - setWeight: 1
+    - pause: { }
+    ```
+- The Canary deployment is triggered by a configmap change.
+- We use the annotation:
+
+    `checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}`
+
+    This annotation on the deployment detect a change in the configmap and triggers a rolling restart of the pods.
+- The pod from the new replicaSet load the new configmap.
+- There is a problem with the configuration and the new pod is failing, the service owner started an investigation of that pod.
+- During the investigation, there are spot replacements in the cluster, and pods from the old replicaSet are being restarted.
+- Those pods (From the old replicaSet), boots and load the new configmap with the faulty configuration and fail to start, causing downtime.
+
+# The solution - revisioned configmaps:
+To create and maintain the full lifecycle of revisioned configmaps, we needed to solve the folllowing issues:=
+- Have a unique name of each configmap.
+- Having unique name for each configmap that changes every deployment, triggered two other issues:
+- Mounting the configmap to a pod - it was imposslbe to mount the configmaps by a static name.
+
+    To solve it we implemented auto-mount mechanizem in our helm charts.
+- Cleanup of old configmaps - We started to have leftovers of old configmaps.
+To solve it we created a job that runs as part of every Canary deployment.
+That Job gets the nameps of the revisioned configmaps that were created as part of this deployment and the job attach each configmap to the latest replicaset using ownerReferance.
+Attaching the configmaps to the replicaSets, allowed us to utilized the same cleanup process Kubernetes perform for replicaSets on our configmaps.
+- While providing this solution, we used Kubernetes version 1.20, in that version the `ttlSecondsAfterFinished` is not supported.
+So we created a cronjob that performs the cleanups of the above jobs.
+
+
 
 You can use the [editor on GitHub](https://github.com/liorfranko/revisioned-configmaps.github.io/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
