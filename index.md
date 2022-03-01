@@ -1,24 +1,26 @@
-## Revisioned Configmaps for Canary deployments on Kubernetes
+# Revisioned Configmaps for Canary deployments on Kubernetes
+Once we started deploying services on Kubernetes with Canary, we faced an issue during some of our rollouts.
+We run most of our production nodes on Spot instances, we perform Canary deployments using Argo rollouts, our rollout strategy is very basic, we replace one pod, we perform manual tests on that pod and if the tests succeeded we continue to 100%.
 
-# Problem:
-- We perform a canary deployment using Argo Rollouts with 2 steps:
+## Problem:
+- While performing the simplest canary deployment using Argo Rollouts we used 2 steps:
     ```
     steps:
     - setWeight: 1
     - pause: { }
     ```
 - The Canary deployment is triggered by a configmap change.
-- We use the annotation:
+- We use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our pods:
 
     `checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}`
 
-    This annotation on the deployment detect a change in the configmap and triggers a rolling restart of the pods.
-- The pod from the new replicaSet load the new configmap.
-- There is a problem with the configuration and the new pod is failing, the service owner started an investigation of that pod.
+    This annotation detect a change in the configmap and triggers a rolling restart of the pods.
+- The pod from the new replicaSet boots and load the new configmap.
+- There is a problem with the configuration and the new pod is either failing to start or there is a performance degradation, the service owner noticed that somethine is not right and start to investigate the pod's behavior.
 - During the investigation, there are spot replacements in the cluster, and pods from the old replicaSet are being restarted.
 - Those pods (From the old replicaSet), boots and load the new configmap with the faulty configuration and fail to start, causing downtime.
 
-# The solution - revisioned configmaps:
+## The solution - revisioned configmaps:
 To create and maintain the full lifecycle of revisioned configmaps, we needed to solve the folllowing issues:=
 - Have a unique name of each configmap.
 - Having unique name for each configmap that changes every deployment, triggered two other issues:
@@ -29,8 +31,6 @@ To create and maintain the full lifecycle of revisioned configmaps, we needed to
 To solve it we created a job that runs as part of every Canary deployment.
 That Job gets the nameps of the revisioned configmaps that were created as part of this deployment and the job attach each configmap to the latest replicaset using ownerReferance.
 Attaching the configmaps to the replicaSets, allowed us to utilized the same cleanup process Kubernetes perform for replicaSets on our configmaps.
-- While providing this solution, we used Kubernetes version 1.20, in that version the `ttlSecondsAfterFinished` is not supported.
-So we created a cronjob that performs the cleanups of the above jobs.
 
 
 
