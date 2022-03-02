@@ -21,7 +21,7 @@ strategy:
     `checksum/config: "{{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}"`
 
 ## The problem
-1. We start a deployment by changing something in a configmap.
+1. We start a canary deployment by changing something in a configmap.
 2. The pod from the new replicaSet boots and load the new configmap.
 3. The configmap is faulty and the new pod is either failing to start or there is a performance degradation.
 4. The service owner noticed the issue and starts to investigate the pod's behavior.
