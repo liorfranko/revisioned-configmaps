@@ -7,11 +7,11 @@ Once we started deploying services on Kubernetes with this Canary, we figured we
 1. We maintain our in-house Helm chart.
 2. We use the following Argo Rollouts Canary strategy:
 ```
-  strategy:
+strategy:
     canary:
-      maxSurge: 0
-      maxUnavailable: 1
-      steps:
+        maxSurge: 0
+        maxUnavailable: 1
+        steps:
         - setWeight: 1
         - pause: {}
 ```
