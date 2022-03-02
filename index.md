@@ -1,6 +1,6 @@
 # Revisioned Configmaps for Canary deployments on Kubernetes
 We run most of our Kubernetes nodes on Spot instances.
-We de our deployments using Argo rollouts, we perform a pretty simple Canary, where we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
+We do our deployments using Argo rollouts, we perform a pretty simple Canary, where we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
 Once we started deploying services on Kubernetes with this Canary, we figured we also need to revision our configmaps.
 
 ## Infrastructure overview:
@@ -17,7 +17,8 @@ strategy:
 ```
 3. To trigger restarts of pods when configmaps are being changed we use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout:
 
-    `checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}`
+
+    `checksum/config: "{{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}"`
 
 ## The problem
 1. We start a deployment by changing something in a configmap.
