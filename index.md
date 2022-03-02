@@ -18,7 +18,7 @@ strategy:
 3. To trigger restarts of pods when configmaps are being changed we use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout:
 
 
-    `checksum/config: "{{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}"`
+    `checksum/config: "\\{{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum \\}}"`
 
 ## The problem
 1. We start a canary deployment by changing something in a configmap.
