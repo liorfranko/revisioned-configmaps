@@ -34,10 +34,10 @@ To create and maintain the full lifecycle of revisioned configmaps, we needed to
 - Create a unique name of each configmap that changes every deployment.
 
     Having unique name for each configmap that changes every deployment, intreduced two issues:
-- Mounting the revisioned configmap - it was imposslbe to mount the configmaps using a static name.
+    - Mounting the revisioned configmap - it was imposslbe to mount the configmaps using a static name.
 
-    To solve it we implemented auto-mount mechanizem in our helm chart.
-- Cleanup of old configmaps - We started to have leftovers of old configmaps.
+        To solve it we implemented auto-mount mechanizem in our helm chart.
+    - Cleanup of old configmaps - We started to have leftovers of old configmaps.
 To solve it we created a job that runs as part of every Canary deployment.
 That Job gets the names of the revisioned configmaps that were created as during the deployment, and attach each configmap to the latest replicaset using ownerReferance.
 Attaching the configmaps to the replicaSets, allowed us to utilized the same cleanup process Kubernetes perform for replicaSets on our configmaps.
