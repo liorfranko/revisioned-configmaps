@@ -36,7 +36,7 @@ spec:
 5. During the investigation, there are spot replacements in the cluster, and pods from the old replicaSet are being restarted.
 
 ## The problem
-**When pods from the old replicaSet are restarted, they load the faulty configmap.**
+**When pods from the old replicaSet are restarted, the new configmap is being loaded ,and if the configmap is faulty many pods can have issues**
 
 ## The solution - revisioned configmaps:
 This is how we created a full lifecycle of revisioned configmaps:
