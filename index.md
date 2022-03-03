@@ -58,6 +58,7 @@ This is how we created a full lifecycle of revisioned configmaps:
 
 
 ## Example:
+The following example is done with a simple version of our [Helm chart](https://github.com/liorfranko/base-app)
 1. We'll start by deploying our Helm chart:
 ![](./start.png)
 
