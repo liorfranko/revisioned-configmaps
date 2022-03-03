@@ -118,7 +118,7 @@ kubectl -n devops-apps-01 get pods demo-76f5954475-cqfh5 -o json | jq '.spec.vol
     ]
   }
 }
- ~  kubectl -n devops-apps-01 get pods demo-76f5954475-cqfh5 -o json | jq '.spec.containers[0].volumeMounts[0]'
+kubectl -n devops-apps-01 get pods demo-76f5954475-cqfh5 -o json | jq '.spec.containers[0].volumeMounts[0]'
 {
   "mountPath": "/etc/kubernetes/configmaps",
   "name": "configmaps-volume"
