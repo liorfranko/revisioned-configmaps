@@ -1,7 +1,7 @@
 # Revisioned Configmaps for Canary deployments on Kubernetes
 We run most of our Kubernetes nodes on Spot instances, and we perform our deployments using Argo rollouts.
 
-We perform pretty simple Canary deployments, where we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
+Our rollout strategy is a pretty simple Canary deployments, where we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
 
 Once we started deploying services on Kubernetes with this Canary strategy, we figured we also need to revision our configmaps during Canary deployments.
 
