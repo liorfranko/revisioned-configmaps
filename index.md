@@ -26,7 +26,7 @@ strategy:
     - setWeight: 1
     - pause: {}
 ```
-3. To trigger the deployment based on configmap changes we use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout object:
+3. To trigger the deployment based on configmap changes we use the [Automatically Roll Deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout object:
 
 ```yaml
 kind: Rollout
