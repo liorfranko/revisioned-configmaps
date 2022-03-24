@@ -16,6 +16,7 @@ Once we started deploying services on Kubernetes using this Canary strategy, we 
 ## Infrastructure overview:
 1. We maintain our in-house Helm chart.
 2. We use the following Argo Rollouts Canary strategy:
+
 ```yaml
 strategy:
   canary:
