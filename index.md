@@ -1,54 +1,64 @@
 # Revisioned Configmaps for Canary deployments on Kubernetes
-We run most of our Kubernetes nodes on Spot instances, and we perform our deployments using Argo rollouts.
+Before we start, we assume you have knoledge on Kubernetes, Argocd and the concept of Canary deployments or A/B.
 
-Our rollout strategy is a pretty simple Canary deployments, where we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
+## Introduction
+In Kubernetes, the defualt and basic way for performing a version upgrade is by changing the image tag, this will create a new replicaSet and based on the Deployment configuration, Kubernetes will terminate pods from the old replicaSet and create pods on the new replicaSet.
+When performing a Deployment or Statefulset upgrade, you don't have the ability for complicated startegies like Canary or A/B.
+For that you'll have to deploy another controller such as Argo Rollouts, Flagger, Spinnaker or any other controller that has that abilities.
+Here I'll talk about performing the Canary deployments using Argo Rollouts.
 
-Once we started deploying services on Kubernetes with this Canary strategy, we figured we also need to revision our configmaps during Canary deployments.
+
+We run most of our Kubernetes nodes on Spot instances, we perform our deployments using Argo rollouts.
+Our rollout strategy is a pretty simple Canary deployment, we replace one pod in the service and pause, once the new pod is up we perform manual tests and if the tests succeeded we continue to 100% rollout.
+
+Once we started deploying services on Kubernetes using this Canary strategy, we figured we also need to revision our configmaps during the Canary deployments.
 
 ## Infrastructure overview:
 1. We maintain our in-house Helm chart.
 2. We use the following Argo Rollouts Canary strategy:
-```
+```yaml
 strategy:
-    canary:
-        maxSurge: 0
-        maxUnavailable: 1
-        steps:
-        - setWeight: 1
-        - pause: {}
+  canary:
+    maxSurge: 0
+    maxUnavailable: 1
+    steps:
+    - setWeight: 1
+    - pause: {}
 ```
-3. To trigger restarts of pods when configmaps are being changed we use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout:
+3. To trigger the deployment based on configmap changes we use the [Automatic roll deployment](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout object:
 
 ```yaml
 kind: Rollout
-spec:
-  template:
-    metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+  spec:
+    template:
+      metadata:
+        annotations:
+          checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 [...]
 ```
-## The behaviour without revisioned configmap
+## Default behaviour without
 1. We start a canary deployment by changing the configmap.
-2. The pod from the new replicaSet boots and load the new configmap.
-3. The configmap is faulty and the new pod is either failing to start or there is a performance degradation.
-4. The service owner noticed the issue and starts to investigate.
-5. During the investigation, there are spot replacements in the cluster, and pods from the old replicaSet are being restarted.
+2. The configmap is updated and A new replicaSet is created.
+3. The pod from the new replicaSet boots and load the new configmap.
+4. The configmap is faulty and the pod doesn't work as expected.
+5. The service owner noticed the issue and starts an investigation.
+6. During the investigation, there are spot replacements in the cluster, and other pods from the old replicaSet are being restarted.
 
 ## The problem
 **When pods from the old replicaSet are restarted, the new configmap is being loaded ,and if the configmap is faulty many pods can have issues**
 
 ## The solution - revisioned configmaps:
-This is how we created a full lifecycle of revisioned configmaps:
-- Create a unique name of each configmap that changes every deployment.
+To solve it we figured that we need to create a revisioned configmaps.
+This is how've build the full lifecycle of the revisioned configmaps:
+- Create a unique name of each configmap that changes every deployment. - We added an epoch timestep to the configmap name.
 
     Having a configmap name that changes every deployment, intreduced two issues:
     - Mounting the revisioned configmap - it was imposslbe to mount the configmaps using a static name as the name is generated during helm redering.
 
-        To solve it we implemented auto-mount mechanizem in our helm chart.
+        To solve it we implemented auto-mount mechanizem in our helm chart using the same timestemp.
     - Cleanup of old configmaps - Having different name every deployment leavs leftovers of old configmaps.
 
-      To solve it we created a job that runs as part of every Canary deployment.
+      To solve it we created a post-install job that runs as part of every Canary deployment.
       That Job gets the names of the revisioned configmaps that were created during the deployment.
 
       That job attach each configmap to the deployment's replicaSet using ownerReferance.
@@ -58,7 +68,7 @@ This is how we created a full lifecycle of revisioned configmaps:
 
 
 ## Example:
-The following example is done with a simple version of our [Helm chart](https://github.com/liorfranko/base-app)
+The following example is done using a mini version of our [Helm chart](https://github.com/liorfranko/base-app)
 1. We'll start by deploying our Helm chart:
 ![](./start.png)
 
