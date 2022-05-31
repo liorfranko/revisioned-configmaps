@@ -256,23 +256,23 @@ We can see that even thought we deployed a new Configmap in the cluster, old pod
     All pods were moved from the old ReplicaSet to the new ReplicaSet
     ![](./step-6.png)
 6. Let's simulate Kubernete GC, by deleting the old ReplicaSets `demo-76f5954475` and `demo-58f56d4967`.
-```
-kubectl -n devops-apps-01 get cm | grep demo
-demo-cm-183520271                         4      5m5s
-demo-cm-2648648036                        2      42m
-demo-cm-557795215                         3      23m
-```
+    ```
+    kubectl -n devops-apps-01 get cm | grep demo
+    demo-cm-183520271                         4      5m5s
+    demo-cm-2648648036                        2      42m
+    demo-cm-557795215                         3      23m
+    ```
 
-```
-kubectl -n devops-apps-01 delete replicasets.apps demo-76f5954475 demo-58f56d4967
-replicaset.apps "demo-76f5954475" deleted
-replicaset.apps "demo-58f56d4967" deleted
-```
+    ```
+    kubectl -n devops-apps-01 delete replicasets.apps demo-76f5954475 demo-58f56d4967
+    replicaset.apps "demo-76f5954475" deleted
+    replicaset.apps "demo-58f56d4967" deleted
+    ```
 
-```
-kubectl -n devops-apps-01 get cm | grep demo
-demo-cm-183520271                         4      5m31s
-```
+    ```
+    kubectl -n devops-apps-01 get cm | grep demo
+    demo-cm-183520271                         4      5m31s
+    ```
 ![](./step-7.png)
 We can see that old Configmaps were successfully deleted!
 
