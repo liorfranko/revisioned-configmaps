@@ -30,7 +30,7 @@ kind: Rollout
     template:
       metadata:
         annotations:
-          checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+          checksum/config: '{{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}'
 [...]
 ```
 ## Default behaviour
