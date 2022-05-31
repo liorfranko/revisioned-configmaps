@@ -24,17 +24,15 @@ strategy:
 ```
 3. To trigger the Deployment based on Configmap changes, we use the [Automatically Roll Deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments) annotation on our Rollout object:
 
-{% raw %}
 ```yaml
 kind: Rollout
   spec:
     template:
       metadata:
         annotations:
-          checksum/config:  {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+          checksum/config: {% raw %} {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }} {% endraw %}
 [...]
 ```
-{% endraw %}
 ## Default behaviour
 1. We start a canary deployment by changing the Configmap.
 2. The Configmap is updated and a new ReplicaSet is created.
