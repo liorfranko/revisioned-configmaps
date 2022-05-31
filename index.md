@@ -5,7 +5,7 @@ Before we start, let’s assume you know about Kubernetes, [Argocd](https://argo
 In Kubernetes, the default and basic way for performing a version upgrade is by changing the image tag - this will create a new ReplicaSet. Based on the Deployment configuration, Kubernetes will terminate pods from the old ReplicaSet and create pods on the new ReplicaSet. When performing a Deployment or Statefulset upgrade, you don’t have the ability to use complicated strategies like Canary or A/B. For that, you’ll have to deploy another controller, such as Argo Rollouts, Flagger, Spinnaker, or any other controller with those abilities. Here, I’ll discuss performing the Canary deployments using [Argo Rollouts](https://argoproj.github.io/argo-rollouts/).
 
 
-We run most of our Kubernetes nodes on Spot instances and we perform our deployments using Argo rollouts. Our rollout strategy is pretty simple - we use Canary deployment, where we replace one pod in the service and pause. Once the new pod is up, we perform manual tests, and if the tests succeeded, we continue to 100% rollout.
+We run most of our Kubernetes nodes on Spot instances and we perform our deployments using Argo rollouts. Our rollout strategy is pretty simple - we use a Canary deployment, where we replace one pod in the service and pause. Once the new pod is up, we perform manual tests, and if the tests succeeded, we continue to 100% rollout.
 
 Once we started using this Canary strategy, we figured we also needed to revise our Configmaps during the Canary deployments.
 
