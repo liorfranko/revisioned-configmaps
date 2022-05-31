@@ -277,6 +277,7 @@ We can see that even thought we deployed a new Configmap in the cluster, old pod
 We can see that old Configmaps were successfully deleted!
 
 
+## Summary
 Because we utilized Configmap versioning, we can easily see the changes of the configurations, we're protected from spot interruptions during the Canary deployment, and we can easily perform rollbacks.
 
 
