@@ -33,7 +33,7 @@ kind: Rollout
           checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 [...]
 ```
-## Default behaviour without
+## Default behaviour
 1. We start a canary deployment by changing the Configmap.
 2. The Configmap is updated and a new ReplicaSet is created.
 3. The pod from the new ReplicaSet is created and loads the new Configmap.
