@@ -278,3 +278,10 @@ We can see that old Configmaps were successfully deleted!
 
 
 Because we utilized Configmap versioning, we can easily see the changes of the configurations, we're protected from spot interruptions during the Canary deployment, and we can easily perform rollbacks.
+
+
+## Links
+* [Automatically Roll Deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
+* [ownerReferences](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/)
+* [Cleanup process that Kubernetes performed](https://kubernetes.io/docs/concepts/architecture/garbage-collection/)
+* [Demo Helm chart](https://github.com/liorfranko/base-app)
