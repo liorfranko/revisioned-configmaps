@@ -1,8 +1,8 @@
 # How to: **Kubernetes Configmap Versioning** on Canary Deployments
-Before we start, let’s assume you know about Kubernetes, Argocd, and the concept of Canary deployments (or A/B).
+Before we start, let’s assume you know about Kubernetes, [Argocd](https://argo-cd.readthedocs.io/en/stable/), and the concept of Canary deployments (or A/B).
 
 ## Introduction
-In Kubernetes, the default and basic way for performing a version upgrade is by changing the image tag - this will create a new ReplicaSet. Based on the Deployment configuration, Kubernetes will terminate pods from the old ReplicaSet and create pods on the new ReplicaSet. When performing a Deployment or Statefulset upgrade, you don’t have the ability to use complicated strategies like Canary or A/B. For that, you’ll have to deploy another controller, such as Argo Rollouts, Flagger, Spinnaker, or any other controller with those abilities. Here, I’ll discuss performing the Canary deployments using Argo Rollouts.
+In Kubernetes, the default and basic way for performing a version upgrade is by changing the image tag - this will create a new ReplicaSet. Based on the Deployment configuration, Kubernetes will terminate pods from the old ReplicaSet and create pods on the new ReplicaSet. When performing a Deployment or Statefulset upgrade, you don’t have the ability to use complicated strategies like Canary or A/B. For that, you’ll have to deploy another controller, such as Argo Rollouts, Flagger, Spinnaker, or any other controller with those abilities. Here, I’ll discuss performing the Canary deployments using [Argo Rollouts](https://argoproj.github.io/argo-rollouts/).
 
 
 We run most of our Kubernetes nodes on Spot instances and we perform our deployments using Argo rollouts. Our rollout strategy is pretty simple - we use Canary deployment, where we replace one pod in the service and pause. Once the new pod is up, we perform manual tests, and if the tests succeeded, we continue to 100% rollout.
@@ -282,6 +282,8 @@ Because we utilized Configmap versioning, we can easily see the changes of the c
 
 
 ## Links
+* [Argocd](https://argo-cd.readthedocs.io/en/stable/)
+* [Argo Rollouts](https://argoproj.github.io/argo-rollouts/)
 * [Automatically Roll Deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
 * [ownerReferences](https://kubernetes.io/docs/concepts/overview/working-with-objects/owners-dependents/)
 * [Cleanup process that Kubernetes performed](https://kubernetes.io/docs/concepts/architecture/garbage-collection/)
