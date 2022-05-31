@@ -9,7 +9,7 @@ We run most of our Kubernetes nodes on Spot instances and we perform our deploym
 
 Once we started using this Canary strategy, we figured we also needed to revise our Configmaps during the Canary deployments.
 
-## Infrastructure overview:
+## Infrastructure overview
 1. We maintain our in-house Helm chart.
 2. We use the following Argo Rollouts Canary strategy:
 
