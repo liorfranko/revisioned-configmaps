@@ -261,11 +261,15 @@ kubectl -n devops-apps-01 get cm | grep demo
 demo-cm-183520271                         4      5m5s
 demo-cm-2648648036                        2      42m
 demo-cm-557795215                         3      23m
+```
 
+```
 kubectl -n devops-apps-01 delete replicasets.apps demo-76f5954475 demo-58f56d4967
 replicaset.apps "demo-76f5954475" deleted
 replicaset.apps "demo-58f56d4967" deleted
+```
 
+```
 kubectl -n devops-apps-01 get cm | grep demo
 demo-cm-183520271                         4      5m31s
 ```
